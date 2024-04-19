@@ -22,12 +22,42 @@ $f3->route('GET /', function() {
 });
 
 // Define order pet route
-$f3->route('GET /order', function() {
-   //echo '<h1>Order Pet</h1>';
+$f3->route('GET|POST /order', function($f3) {
+    session_start();
+
+    //Check if the form has been posted
+    if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $pet = $_POST['petKind'];
+        $petColor = $_POST['petColor'];
+        //Validate the data
+        if (empty($pet)) {
+            //Data is invalid
+            echo "Please supply a pet type";
+        } else {
+            //Data is valid
+            $f3->set('SESSION.pet', $pet);
+            $f3->set('SESSION.petColor', $petColor);
+            //Redirect to the summary route
+            $f3->reroute("summary");
+        }
+    }
 
    //Render view page
     $view = new Template();
     echo $view->render('views/pet-order.html');
+});
+
+$f3->route('GET|POST /summary', function() {
+    session_start();
+    /*$pet = $_SESSION['pet'];
+    $petColor = $_SESSION['petColor'];
+    echo '<title>Order Pet</title>';
+    echo '<h1>Results</h1>';
+    echo "Thank you for ordering a $petColor $pet!";*/
+
+    //Render view page
+    $view = new Template();
+    echo $view->render('views/results.html');
 });
 
 // Run Fat-Free
